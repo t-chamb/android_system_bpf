@@ -21,6 +21,8 @@ on load_bpf_programs
     # Enable JIT kallsyms export for privileged users only
     write /proc/sys/net/core/bpf_jit_kallsyms 1
     exec_start bpfloader
+    # Kernel 3.18 (cappu) has no eBPF: let boot continue without the programs.
+    setprop bpf.progs_loaded 1
 
 service bpfloader /system/bin/bpfloader
     capabilities CHOWN SYS_ADMIN NET_ADMIN
@@ -54,6 +56,5 @@ service bpfloader /system/bin/bpfloader
     #
     rlimit memlock 1073741824 1073741824
     oneshot
-    reboot_on_failure reboot,bpfloader-failed
     # we're not really updatable, but want to be able to load bpf programs shipped in apexes
     updatable
